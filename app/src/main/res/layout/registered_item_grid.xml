@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/registered_item_content_box"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:onClick="editPost">
+
+    <ImageView
+        android:id="@+id/registered_item_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:srcCompat="@mipmap/ic_launcher" />
+
+    <LinearLayout
+        android:id="@+id/registered_item_info_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/registered_item_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/registered_item_description"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Description"
+            android:visibility="invisible"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/registered_item_culture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/registered_item_status"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Status"
+            android:visibility="invisible"
+            android:gravity="center"/>
+    </LinearLayout>
+
+</LinearLayout>

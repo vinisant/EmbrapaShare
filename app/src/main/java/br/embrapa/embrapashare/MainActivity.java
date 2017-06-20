@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, requestCode);
         }
     }
-
+//TODO mudar para um listener
     public void editPost(View v) {
         Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
 

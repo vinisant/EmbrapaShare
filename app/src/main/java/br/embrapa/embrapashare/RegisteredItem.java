@@ -2,16 +2,16 @@ package br.embrapa.embrapashare;
 
 
 public class RegisteredItem {
-
-    private String registerID;
-    private String status;
+//TODO mudar propriedades
+    private long registerID;
+    private int status;
     private String date;
     private String imageName;
-    private String culture;
+    private int culture;
     private String description;
     private String local;
 
-    public RegisteredItem(String registerID, String status, String date, String imageName, String culture, String description) {
+    public RegisteredItem(long registerID, int status, String date, String imageName, int culture, String description) {
         this.registerID = registerID;
         this.status = status;
         this.date = date;
@@ -20,15 +20,15 @@ public class RegisteredItem {
         this.description = description;
     }
 
-    /*public RegisteredItem() {
-        this.status = "status";
+  public RegisteredItem() {}
+     /*     this.status = "status";
         this.date = "27/03/2017 16:55";
         this.imageName = "";
         this.culture = "Café";
         this.description = "aaaaaa aaa aaaaaaaaa aaa";
     }*/
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -40,7 +40,7 @@ public class RegisteredItem {
         this.imageName = imageName;
     }
 
-    public void setCulture(String culture) {
+    public void setCulture(int culture) {
         this.culture = culture;
     }
 
@@ -48,11 +48,11 @@ public class RegisteredItem {
         this.description = description;
     }
 
-    public void setRegisterID(String registerID) { this.registerID = registerID; }
+    public void setRegisterID(long registerID) { this.registerID = registerID; }
 
 
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
@@ -64,7 +64,7 @@ public class RegisteredItem {
         return imageName;
     }
 
-    public String getCulture() {
+    public int getCulture() {
         return culture;
     }
 
@@ -72,6 +72,8 @@ public class RegisteredItem {
         return description;
     }
 
-    public String getRegisterID() { return registerID; }
+    public long getRegisterID() { return registerID; }
+
+    public String getRegisterIDString() { return Long.toString(registerID); }
 }
 

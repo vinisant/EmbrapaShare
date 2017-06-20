@@ -49,11 +49,11 @@ public class RegisteredItemAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         RegisteredItemViewHolder holder = (RegisteredItemViewHolder) viewHolder;
         holder.description.setText(itens.get(position).getDescription());
-        holder.status.setText(itens.get(position).getStatus());
-        holder.culture.setText(itens.get(position).getCulture());
+        holder.status.setText(context.getResources().getStringArray(R.array.register_status)[itens.get(position).getStatus()]);
+        holder.culture.setText(context.getResources().getStringArray(R.array.cultures_array)[itens.get(position).getCulture()]);
         holder.date.setText(itens.get(position).getDate());
 
-        holder.content_box.setTag(itens.get(position).getRegisterID()); //colocar onclick aqui
+        holder.content_box.setTag(itens.get(position).getRegisterIDString()); //colocar onclick aqui
 
         File imgFile = new File(Environment.getExternalStorageDirectory() + File.separator + "EmbrapaShare" + File.separator + itens.get(position).getImageName());
 

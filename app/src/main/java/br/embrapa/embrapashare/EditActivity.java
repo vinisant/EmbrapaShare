@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -53,6 +54,7 @@ public class EditActivity extends AppCompatActivity{
 
         crud = new DBController(getBaseContext());
         culture = 0;
+        id = -1;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,23 +74,8 @@ public class EditActivity extends AppCompatActivity{
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                String date = dateView.getText().toString();
-                //MUDAR PARA EVENTO String culture = ((Spinner)findViewById(R.id.edit_item_culture)).getSelectedItem().toString();
-                String status = "Rascunho";
-                String description = descriptionView.getText().toString();
-                String local = "????";
-
-
-                if(getIntent().getIntExtra("requestCode",0) == REQUEST_EDIT_PHOTO) {
-                    //last_update = date;
-                    //crud.alterDataByID(getIntent().getStringExtra("registerID"), date, "" + culture, status, last_update, description, local);
-                }
-                else{
-                    String result;
-                   // result = crud.insertData(date, "" + culture, status, last_update, description, imagePath, local);
-                }
-
+                int r = crud.updateDataByID(id, 1, getCurrentDateTime(), culture, dateView.getText().toString(), descriptionView.getText().toString(), null);
+                Log.e(">>>"+id, " |"+r);
                 setResult(RESULT_OK);
                 finish();
             }
@@ -115,14 +102,15 @@ public class EditActivity extends AppCompatActivity{
             startActivityForResult(Intent.createChooser(intent, getString(R.string.image_chooser)), REQUEST_LOAD_PHOTO);
         }
         else if(getIntent().getIntExtra("requestCode",0) == REQUEST_EDIT_PHOTO){
-            String[] data = crud.loadDataForEdit(getIntent().getStringExtra("registerID"));
+            id = Long.valueOf(getIntent().getStringExtra("registerID"));
+            RegisteredItem data = crud.loadDataForEdit(id);
 
-            imageFile = FileUtils.loadImageFile(data[3]);
+            imageFile = FileUtils.loadImageFile(data.getImageName());
 
             Glide.with(this).load(imageFile).override(150,150).centerCrop().into(imageView);
-            dateView.setText(data[5]);
-            descriptionView.setText(data[2]);
-            spinner.setSelection(Integer.parseInt(data[4]));
+            dateView.setText(data.getDate());
+            descriptionView.setText(data.getDescription());
+            spinner.setSelection(data.getCulture());
         }
     }
 
@@ -156,6 +144,15 @@ public class EditActivity extends AppCompatActivity{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        //TODO flag pra ver se mudou mesmo
+        int r = crud.updateDataByID(id, 0, getCurrentDateTime(), culture, dateView.getText().toString(), descriptionView.getText().toString(), null);
+        Log.e(">>>"+id, " |"+r);
+        setResult(RESULT_OK);
+        finish();
+    }
+
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -173,7 +170,7 @@ public class EditActivity extends AppCompatActivity{
             }
 
             String[] exif = FileUtils.getExif(imageFile);
-            id = crud.insertData(0, getCurrentDateTime(), 0, exif[2], "", imageFile.getName(), "???", exif[0], exif[1], exif[2]);
+            id = crud.insertData(0, null, 0, exif[2], null, imageFile.getName(), null, exif[0], exif[1], exif[2]);
             if(id<0){
                 //TODO tratar caso nao tenha adicionado no bd, deleta a imagem?
             }
@@ -218,11 +215,14 @@ public class EditActivity extends AppCompatActivity{
                     .setNegativeButton(getString(R.string.delete_cancel), null)
                     .show();
         }
+        else if(id == android.R.id.home){
+            onBackPressed();
+        }
         return super.onOptionsItemSelected(item);
     }
 
 
-    public String getCurrentDateTime(){
+    public String getCurrentDateTime(){ //TODO colocar em um utils
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 

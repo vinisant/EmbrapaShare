@@ -8,6 +8,7 @@
     <string name="delete_message">Tem certeza que quer excluir o registro?</string>
     <string name="delete_accept">Sim</string>
     <string name="delete_cancel">Não</string>
+    <string name="image_chooser">Escolha uma imagem</string>
 
     <string-array name="cultures_array">
         <item>Algodão</item>
@@ -22,5 +23,14 @@
         <item>Soja</item>
         <item>Trigo</item>
         <item>Uva</item>
+    </string-array>
+
+    <string-array name="register_status">
+        <item>Rascunho</item>
+        <item>Pendente</item>
+        <item>Enviando...</item>
+        <item>Enviado</item>
+        <item>Respondido</item>
+        <item>Visto</item>
     </string-array>
 </resources>

@@ -16,29 +16,28 @@ public class DBController {
     public DBController(Context context){
         helper = new DBHelper(context);
     }
-//mudar esse retorno
-    public String insertData(String date, String culture, String status, String last_update, String description, String image_name, String local){
+
+    public long insertData(int status, String last_update, int culture, String date, String description, String image_name, String local, String exif_lat, String exif_long, String exif_date){
         ContentValues values;
         long result;
-
+//TODO testar com entradas nulas
         db = helper.getWritableDatabase();
         values = new ContentValues();
-        values.put(DBHelper.CULTURE, culture);
         values.put(DBHelper.STATUS, status);
-        values.put(DBHelper.DATE, date);
         values.put(DBHelper.LAST_UPDATE, last_update);
+        values.put(DBHelper.CULTURE, culture);
+        values.put(DBHelper.DATE, date);
         values.put(DBHelper.DESCRIPTION, description);
         values.put(DBHelper.IMAGE_NAME, image_name);
         values.put(DBHelper.LOCAL, local);
+        values.put(DBHelper.EXIF_LAT, exif_lat);
+        values.put(DBHelper.EXIF_LONG, exif_long);
+        values.put(DBHelper.EXIF_DATE, exif_date);
 
         result = db.insert(DBHelper.TABLE, null, values);
         db.close();
 
-        if (result ==-1)
-            return "Error when insert";
-        else
-            return "Success";
-
+        return result; //TODO ver se esse retorno rowid eh confiavel
     }
 
     public Cursor loadData(){

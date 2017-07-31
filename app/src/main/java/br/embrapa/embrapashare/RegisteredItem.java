@@ -2,78 +2,96 @@ package br.embrapa.embrapashare;
 
 
 public class RegisteredItem {
-//TODO mudar propriedades
-    private long registerID;
+    private long id;
     private int status;
+    private String lastUpdate;
+    private String culture;
     private String date;
-    private String imageName;
-    private int culture;
     private String description;
     private String local;
+    private String first_image;
 
-    public RegisteredItem(long registerID, int status, String date, String imageName, int culture, String description) {
-        this.registerID = registerID;
-        this.status = status;
-        this.date = date;
-        this.imageName = imageName;
-        this.culture = culture;
-        this.description = description;
+    public RegisteredItem() {
+        this.status = 0;
     }
 
-  public RegisteredItem() {}
-     /*     this.status = "status";
-        this.date = "27/03/2017 16:55";
-        this.imageName = "";
-        this.culture = "Café";
-        this.description = "aaaaaa aaa aaaaaaaaa aaa";
-    }*/
+    public RegisteredItem(long id, int status, String lastUpdate, String culture, String date, String description, String local, String first_image) {
+        this.id = id;
+        this.status = status;
+        this.lastUpdate = lastUpdate;
+        this.culture = culture;
+        this.date = date;
+        this.description = description;
+        this.local = local;
+        this.first_image = first_image;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getIdString() { return Long.toString(id); }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getStatus() {
+        return status;
+    }
 
     public void setStatus(int status) {
         this.status = status;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public String getLastUpdate() {
+        return lastUpdate;
     }
 
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
+    public void setLastUpdate(String last_update) {
+        this.lastUpdate = last_update;
     }
 
-    public void setCulture(int culture) {
+    public String getCulture() {
+        return culture;
+    }
+
+    public void setCulture(String culture) {
         this.culture = culture;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setRegisterID(long registerID) { this.registerID = registerID; }
-
-
-
-    public int getStatus() {
-        return status;
     }
 
     public String getDate() {
         return date;
     }
 
-    public String getImageName() {
-        return imageName;
-    }
-
-    public int getCulture() {
-        return culture;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public long getRegisterID() { return registerID; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getRegisterIDString() { return Long.toString(registerID); }
+    public String getLocal() {
+        return local;
+    }
+
+    public void setLocal(String local) {
+        this.local = local;
+    }
+
+    public String getFirstImage() {
+        return first_image;
+    }
+
+    public void setFirstImage(String first_image) {
+        this.first_image = first_image;
+    }
+
+
 }
 

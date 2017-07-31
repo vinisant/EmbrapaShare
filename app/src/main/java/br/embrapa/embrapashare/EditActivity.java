@@ -1,28 +1,37 @@
 package br.embrapa.embrapashare;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -30,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class EditActivity extends AppCompatActivity{
@@ -39,56 +49,148 @@ public class EditActivity extends AppCompatActivity{
     //private String last_update;
     //private File image;
     DBController crud;
-    boolean edited;
+    //boolean edited_record;
+    boolean edited_images;
     long id;
-    int culture;
+    String culture;
+    String[] images_names;
     File imageFile;
-    ImageView imageView;
-    EditText dateView;
+    //ImageView imageView;
+    TextView dateView;
     EditText descriptionView;
+    InstantAutoComplete cultureView;
+    Context context;
+
+    private RecyclerView recyclerView;
+    private LinkedList<ImageItem> itens;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        context = this;
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_image_list);
+        applyEmpty();
 
         crud = new DBController(getBaseContext());
-        culture = 0;
+        culture = "";
         id = -1;
+        /*edited_record = */edited_images = false;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // add back arrow to toolbar
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+
+            LayoutInflater inflator = (LayoutInflater) this
+                    .getSystemService(this.LAYOUT_INFLATER_SERVICE);
+            View v = inflator.inflate(R.layout.autocomplete, null);
+
+            actionBar.setCustomView(v);
         }
 
-        imageView = (ImageView)findViewById(R.id.edit_item_image);
 
-        dateView = (EditText)findViewById(R.id.edit_item_date);
-        descriptionView = (EditText)findViewById(R.id.edit_item_description);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (this, android.R.layout.select_dialog_item, crud.loadCultures());
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        cultureView = (InstantAutoComplete) findViewById(R.id.actv_culture);
+        cultureView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+        cultureView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                int r = crud.updateDataByID(id, 1, getCurrentDateTime(), culture, dateView.getText().toString(), descriptionView.getText().toString(), null);
-                Log.e(">>>"+id, " |"+r);
-                setResult(RESULT_OK);
-                finish();
+            public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                culture = cultureView.getText().toString();
             }
         });
 
-        Spinner spinner = (Spinner) findViewById(R.id.edit_item_culture);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        cultureView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                culture = position;
+            public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+                culture = cultureView.getText().toString();
             }
+        });
+
+        //cultureView.setDropDownWidth(getResources().getDisplayMetrics().widthPixels);
+
+
+
+        //imageView = (ImageView)findViewById(R.id.edit_item_image);
+
+        dateView = (TextView)findViewById(R.id.text_item_date);
+        descriptionView = (EditText)findViewById(R.id.edit_item_description);
+
+        /*descriptionView.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+
+                Log.e("after"," ");
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.e("before>>>>"," "+after);
+                if(count != 0)
+                    edited_record = true;
+            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.e("on","  "+count);
+            }
+        });*/
+
+
+
+        FloatingActionButton fabSend = (FloatingActionButton) findViewById(R.id.fab_send);
+        fabSend.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onClick(View view) {
+                if(culture.length() > 0){
+                    //if(edited_images)
+                    //    crud.updateImagesByRecID(id, images_names);
+                    crud.updateDataByID(id, crud.STATUS_PENDING, getCurrentDateTime(), culture, dateView.getText().toString(), descriptionView.getText().toString(), null);
+                    setResult(RESULT_OK);
+                    finish();
+                }
+                else {
+                    //cultureView.requestFocus();
+                    cultureView.showDropDown();
+                    showKeyboard();
+                }
+
+            }
+        });
+
+        FloatingActionButton fabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
+        fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final CharSequence opts[] = new CharSequence[] {getString(R.string.add_camera), getString(R.string.add_chooser)};
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(getString(R.string.add_title));
+                builder.setItems(opts, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                dispatchTakePictureIntent();
+                                break;
+                            case 1:
+                                dispatchTakeChooserIntent();
+                                break;
+                            default:
+                        }
+                    }
+                });
+                builder.show();
+            }
         });
 
 
@@ -96,24 +198,30 @@ public class EditActivity extends AppCompatActivity{
             dispatchTakePictureIntent();
         }
         else if(getIntent().getIntExtra("requestCode",0) == REQUEST_LOAD_PHOTO){
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.image_chooser)), REQUEST_LOAD_PHOTO);
+            dispatchTakeChooserIntent();
         }
         else if(getIntent().getIntExtra("requestCode",0) == REQUEST_EDIT_PHOTO){
             id = Long.valueOf(getIntent().getStringExtra("registerID"));
             RegisteredItem data = crud.loadDataForEdit(id);
 
-            imageFile = FileUtils.loadImageFile(data.getImageName());
+            //TODO imageFile = FileUtils.loadImageFile(data.getImageName());
 
-            Glide.with(this).load(imageFile).override(150,150).centerCrop().into(imageView);
+            //Glide.with(this).load(imageFile).override(150,150).centerCrop().into(imageView);
             dateView.setText(data.getDate());
             descriptionView.setText(data.getDescription());
-            spinner.setSelection(data.getCulture());
-        }
-    }
+            cultureView.setText(data.getCulture());
 
+            applyImages();
+
+
+
+            //if(cultureView.getText().length() != 0)
+                descriptionView.requestFocus();
+            //else
+            //    showKeyboard();
+        }
+
+    }
 
     static final int REQUEST_CAPTURE_PHOTO = 1;
     static final int REQUEST_LOAD_PHOTO = 2;
@@ -144,11 +252,17 @@ public class EditActivity extends AppCompatActivity{
         }
     }
 
+    private void dispatchTakeChooserIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.image_chooser)), REQUEST_LOAD_PHOTO);
+    }
+
     @Override
     public void onBackPressed() {
-        //TODO flag pra ver se mudou mesmo
-        int r = crud.updateDataByID(id, 0, getCurrentDateTime(), culture, dateView.getText().toString(), descriptionView.getText().toString(), null);
-        Log.e(">>>"+id, " |"+r);
+        //if(edited_record || edited_images)
+            crud.updateDataByID(id, crud.STATUS_DRAFT, getCurrentDateTime(), culture, dateView.getText().toString(), descriptionView.getText().toString(), null);
         setResult(RESULT_OK);
         finish();
     }
@@ -160,6 +274,9 @@ public class EditActivity extends AppCompatActivity{
             //if (requestCode == REQUEST_CAPTURE_PHOTO)
             //  imageFile has already been instantiated
 
+            if(requestCode == REQUEST_CAPTURE_PHOTO)
+                FileUtils.deleteLastCapturedImage(this);
+
             if(requestCode == REQUEST_LOAD_PHOTO){
                 try {
                     imageFile = FileUtils.copyInputStreamToFile(getContentResolver().openInputStream(data.getData()));
@@ -167,22 +284,35 @@ public class EditActivity extends AppCompatActivity{
                     //erro nao copiou // TODO
                     e.printStackTrace();
                 }
+                cultureView.showDropDown();
             }
 
-            String[] exif = FileUtils.getExif(imageFile);
-            id = crud.insertData(0, null, 0, exif[2], null, imageFile.getName(), null, exif[0], exif[1], exif[2]);
+            dateView.setText(getCurrentDateTime());
+            //String[] exif = FileUtils.getExif(imageFile);
+
+            if(id<0) {
+                id = crud.insertData(0, dateView.getText().toString(), "", dateView.getText().toString(), null, null, imageFile.getName());
+                showKeyboard();
+            }
+            else {
+                crud.insertImage(id, imageFile.getName());
+                cultureView.dismissDropDown();
+                descriptionView.requestFocus();
+            }
+
             if(id<0){
                 //TODO tratar caso nao tenha adicionado no bd, deleta a imagem?
             }
 
-            Glide.with(this).load(imageFile).override(150,150).centerCrop().into(imageView);
-            if(exif[2] == "")
-                dateView.setText(getCurrentDateTime());
-            else dateView.setText(exif[2]);
+            //Glide.with(this).load(imageFile).override(150,150).centerCrop().into(imageView);
+            applyImages();
+
+
         }
         else {
             //mensagem de erro //TODO
-            finish();
+            if(id<0)
+                finish();
         }
     }
 
@@ -226,4 +356,46 @@ public class EditActivity extends AppCompatActivity{
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
+    public void showKeyboard(){
+        //cultureView.requestFocus();
+        //cultureView.showDropDown();
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
+        //imm.showSoftInput(cultureView, InputMethodManager.SHOW_IMPLICIT);
+        imm.showSoftInput(cultureView, InputMethodManager.SHOW_FORCED);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    }
+
+    public void applyImages(){
+        itens = crud.loadImagesForList(id);
+        recyclerView.setAdapter(new ImageItemAdapter(itens, this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    }
+
+    public void applyEmpty(){
+        recyclerView.setAdapter(new ImageItemAdapter(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    }
+
+    //event from layout images_list
+    public void deleteImage(final String selected_image_id) {
+        if(itens.size() <= 1)
+            return;
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_menu_info_details)
+                .setTitle(getString(R.string.delete_image_title))
+                .setMessage(getString(R.string.delete_image_message))
+                .setPositiveButton(getString(R.string.delete_accept),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            crud.deleteImagesByID(selected_image_id);
+                            applyImages();
+                        }
+                    }
+                )
+                .setNegativeButton(getString(R.string.delete_cancel), null)
+                .show();
+
+    }
 }

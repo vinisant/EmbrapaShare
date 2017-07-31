@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+
+    <br.embrapa.embrapashare.InstantAutoComplete
+        android:id="@+id/actv_culture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:dropDownAnchor="@id/toolbar"
+        android:dropDownWidth="fill_parent"
+        android:ems="10"
+        android:hint="@string/culture_chooser"
+        android:imeOptions="actionDone"
+        android:inputType="text|textNoSuggestions|textCapSentences"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:textColor="#FFFFFF"
+        tools:singleLine="true">
+
+
+    </br.embrapa.embrapashare.InstantAutoComplete>
+
+</LinearLayout>

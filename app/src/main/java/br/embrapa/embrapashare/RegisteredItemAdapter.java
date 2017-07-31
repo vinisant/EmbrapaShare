@@ -48,32 +48,18 @@ public class RegisteredItemAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         RegisteredItemViewHolder holder = (RegisteredItemViewHolder) viewHolder;
-        holder.description.setText(itens.get(position).getDescription());
-        holder.status.setText(context.getResources().getStringArray(R.array.register_status)[itens.get(position).getStatus()]);
-        holder.culture.setText(context.getResources().getStringArray(R.array.cultures_array)[itens.get(position).getCulture()]);
-        holder.date.setText(itens.get(position).getDate());
+        holder.getDescription().setText(itens.get(position).getDescription());
+        holder.getStatus().setText(context.getResources().getStringArray(R.array.register_status)[itens.get(position).getStatus()]);
+        holder.getCulture().setText(itens.get(position).getCulture());
+        holder.getDate().setText(itens.get(position).getDate());
 
-        holder.content_box.setTag(itens.get(position).getRegisterIDString()); //colocar onclick aqui
-
-        File imgFile = new File(Environment.getExternalStorageDirectory() + File.separator + "EmbrapaShare" + File.separator + itens.get(position).getImageName());
-
-        if(imgFile.exists()){
-            /*
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-            if(myBitmap.getHeight() >= myBitmap.getWidth())
-                holder.image.setImageBitmap(myBitmap.createBitmap(myBitmap, 0, (myBitmap.getHeight()-myBitmap.getWidth())/2, myBitmap.getWidth(), myBitmap.getWidth()));
-            else
-                holder.image.setImageBitmap(myBitmap.createBitmap(myBitmap, (myBitmap.getWidth()-myBitmap.getHeight())/2, 0, myBitmap.getHeight(), myBitmap.getHeight()));
-            */
-
-            Glide.with(context).load(imgFile).override(150,150).centerCrop().into(holder.image);
+        holder.getContentBox().setTag(itens.get(position).getIdString()); //colocar onclick aqui
 
 
-            //holder.image.setImageBitmap(myBitmap);
+        File imgFile = new File(Environment.getExternalStorageDirectory() + File.separator + "EmbrapaShare" + File.separator + itens.get(position).getFirstImage());
 
-        }
-
+        if(imgFile.exists())
+            Glide.with(context).load(imgFile).override(150,150).centerCrop().into(holder.getFirstImage());
 
     }
 

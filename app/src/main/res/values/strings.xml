@@ -6,9 +6,18 @@
     <string name="delete">Excluir</string>
     <string name="delete_title">Excluir registro</string>
     <string name="delete_message">Tem certeza que quer excluir o registro?</string>
+    <string name="delete_image_title">Excluir imagem</string>
+    <string name="delete_image_message">Deseja excluir a imagem?</string>
     <string name="delete_accept">Sim</string>
     <string name="delete_cancel">Não</string>
+    <string name="delete_confirmation">Registro excluído</string>
     <string name="image_chooser">Escolha uma imagem</string>
+    <string name="culture_chooser">Digite a cultura</string>
+    <string name="add_title">Adicionar imagem</string>
+    <string name="add_camera">Tirar uma foto</string>
+    <string name="add_chooser">Escolher da galeria</string>
+    <string name="description_image">Imagem da cultura</string>
+    <string name="description_request_image">Escreva uma descrição para o registro:</string>
 
     <string-array name="cultures_array">
         <item>Algodão</item>

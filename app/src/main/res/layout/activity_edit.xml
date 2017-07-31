@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
+    android:clipToPadding="false"
+    app:layout_collapseParallaxMultiplier="1.0"
     tools:context="br.embrapa.embrapashare.EditActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -18,17 +21,47 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+        <include layout="@layout/content_edit_images" />
+
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_edit" />
+    <include
+        android:id="@+id/include2"
+        layout="@layout/content_edit" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorPrimary"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimaryLight"
+        app:fabSize="normal"
         app:srcCompat="@android:drawable/ic_menu_send" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:padding="16dp"
+        android:tint="@android:color/background_light"
+        app:backgroundTint="@color/colorPrimaryLight"
+        app:fabSize="normal"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="top|right"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+    <TextView
+        android:id="@+id/text_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:enabled="false" />
 
 </android.support.design.widget.CoordinatorLayout>

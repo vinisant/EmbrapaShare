@@ -1,10 +1,20 @@
 package br.embrapa.embrapashare;
 
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.database.Cursor;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.BaseColumns;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,5 +117,62 @@ public class FileUtils {
             e.printStackTrace();
         }
         return exif;
+    }
+
+
+
+    public static byte[] fullyReadFileToBytes(File f) throws IOException {
+        int size = (int) f.length();
+        byte bytes[] = new byte[size];
+        byte tmpBuff[] = new byte[size];
+        FileInputStream fis= new FileInputStream(f);;
+        try {
+
+            int read = fis.read(bytes, 0, size);
+            if (read < size) {
+                int remain = size - read;
+                while (remain > 0) {
+                    read = fis.read(tmpBuff, 0, remain);
+                    System.arraycopy(tmpBuff, 0, bytes, size - remain, read);
+                    remain -= read;
+                }
+            }
+        }  catch (IOException e){
+            throw e;
+        } finally {
+            fis.close();
+        }
+
+        return bytes;
+    }
+
+    public static void deleteLastCapturedImage(Context ctx) { //TODO isso deleta mesmo se nao tiver duplicata
+        String[] projection = {
+                MediaStore.Images.ImageColumns.SIZE,
+                MediaStore.Images.ImageColumns.DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATA,
+                BaseColumns._ID
+        };
+
+        Cursor c = null;
+        Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        try {
+            if (u != null) {
+                c = (new CursorLoader(ctx, u, projection, null, null, null)).loadInBackground();
+            }
+            if ((c != null) && (c.moveToLast())) {
+
+                ContentResolver cr = ctx.getContentResolver();
+                int i = cr.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, BaseColumns._ID + "=" + c.getString(c.getColumnIndex(BaseColumns._ID)), null);
+
+                Log.v(">>>>>>>>>>>", "Number of column deleted : " + i);
+
+            }
+        } finally {
+            if (c != null) {
+                c.close();
+            }
+        }
     }
 }
